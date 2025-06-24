@@ -1,6 +1,7 @@
 import React from 'react';
 
 function SearchBar({value, onChange, onKeyDown, onSearch}) {
+    
     const onSubmit = (e) => {
         e.preventDefault();
         onSearch(value);
@@ -14,6 +15,7 @@ function SearchBar({value, onChange, onKeyDown, onSearch}) {
                 type="text"
                 placeholder="Enter A Song, Album, or Artist"
                 onKeyDown={onKeyDown}/>
+                  
             </form>
         </div>
     );

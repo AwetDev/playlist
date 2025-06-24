@@ -35,6 +35,8 @@ const performSearch = (searchTerm) => {
           <SearchResults />
           <Playlist />
           {console.log('hi you people')}
+          {console.log('its working now')}
+    
         </div>
       </div>
     </div>
