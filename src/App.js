@@ -33,7 +33,7 @@ const performSearch = (searchTerm) => {
         <div className="App-playlist">
           <SearchResults />
           <Playlist />
-          {console.log('hi you')}
+          {console.log('hi you people')}
         </div>
       </div>
     </div>
