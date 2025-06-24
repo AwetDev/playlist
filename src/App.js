@@ -1,14 +1,15 @@
-import React, { useState } from 'react';  // Added useState import
+import React from 'react';
+import { useAutoSave } from './hooks/useAutoSave';
 import './App.css';
 import SearchBar from './components/SearchBar';
 import SearchResults from './components/SearchResults';
 import Playlist from './components/Playlist';
 
 function App() {
-  const [query, setQuery] = useState('');
-  const [results, setResults] = useState([]);
-  const [playlistName, setPlaylistName] = useState('New Playlist');
-  const [playlistTracks, setPlaylistTracks] = useState([]);
+  const [query, setQuery] = useAutoSave('query', '');
+  const [results, setResults] = useAutoSave('searchResults', []);
+  const [playlistName, setPlaylistName] = useAutoSave('playlistName', 'New Playlist');
+  const [playlistTracks, setPlaylistTracks] = useAutoSave('playlistTracks', []);
 
 
 
