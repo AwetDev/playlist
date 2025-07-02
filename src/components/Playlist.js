@@ -2,7 +2,7 @@ import React from 'react';
 import Tracklist from './Tracklist';
 
 function Playlist() {
-    
+    console.log('playlist')
     
     return (
         <div>
