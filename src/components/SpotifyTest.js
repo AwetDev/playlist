@@ -1,47 +1,93 @@
-import React, { useEffect } from 'react';
-import { verifyClientId } from '../services/spotify';
+import React, { useEffect, useState } from 'react';
+import { getTokenFromUrl, setAccessToken, getCurrentUser, loginUrl } from '../services/spotify';
 
 const SpotifyTest = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userInfo, setUserInfo] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     const testSpotifyConnection = async () => {
       console.log('🚀 Testing Spotify Configuration...');
-      const isValid = await verifyClientId();
+      setIsLoading(true);
       
-      if (isValid) {
-        console.log('🎉 Spotify configuration looks good!');
-        console.log('💡 Next steps:');
-        console.log('1. Try searching for tracks');
-        console.log('2. Log in with Spotify to access user-specific features');
-      } else {
-        console.error('❌ There was an issue with the Spotify configuration.');
-        console.log('🔍 Check the console for specific error messages above.');
+      try {
+        // Check if we have a token in the URL (after login redirect)
+        const tokenData = getTokenFromUrl();
+        
+        if (tokenData.access_token) {
+          // Set the access token for API calls
+          setAccessToken(tokenData.access_token);
+          setIsLoggedIn(true);
+          
+          try {
+            // Try to get user info to verify the token works
+            const user = await getCurrentUser();
+            setUserInfo(user);
+            console.log('🎉 Successfully connected to Spotify!');
+            console.log('👤 Logged in as:', user.display_name || user.id);
+          } catch (error) {
+            console.error('❌ Error fetching user info:', error);
+          }
+        }
+      } catch (error) {
+        console.error('❌ Error testing Spotify connection:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
-
+    
     testSpotifyConnection();
   }, []);
 
-  return (
-    <div style={{
-      padding: '20px',
-      margin: '20px',
-      border: '1px solid #ddd',
-      borderRadius: '8px',
-      backgroundColor: '#f8f9fa'
-    }}>
-      <h3>Spotify Connection Test</h3>
-      <p>Check your browser's developer console (F12) to see the test results.</p>
-      <p>Look for messages starting with 🚀, ✅, or ❌</p>
-      
-      <div style={{ marginTop: '20px' }}>
-        <h4>Common Issues:</h4>
-        <ol>
-          <li>Missing or incorrect Client ID in .env file</li>
-          <li>Incorrect redirect URI in Spotify Developer Dashboard</li>
-          <li>Not restarting development server after changing .env</li>
-          <li>Missing environment variables in production build</li>
-        </ol>
+  const handleLogin = () => {
+    window.location.href = loginUrl;
+  };
+
+  if (isLoading) {
+    return (
+      <div className="spotify-test" style={{ padding: '20px', textAlign: 'center' }}>
+        <h2>Spotify Connection</h2>
+        <p>Checking connection...</p>
       </div>
+    );
+  }
+
+  if (isLoggedIn && userInfo) {
+    return (
+      <div style={{ padding: '20px', textAlign: 'center' }}>
+        <h2>🎉 Connected to Spotify!</h2>
+        <p>Welcome, <strong>{userInfo.display_name || userInfo.id}</strong>!</p>
+        {userInfo.images?.[0]?.url && (
+          <img 
+            src={userInfo.images[0].url} 
+            alt="Profile" 
+            style={{ width: 100, height: 100, borderRadius: '50%' }}
+          />
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ padding: '20px', textAlign: 'center' }}>
+      <h2>Connect to Spotify</h2>
+      <p>You need to log in with Spotify to use this app.</p>
+      <button 
+        onClick={handleLogin}
+        style={{
+          padding: '10px 20px',
+          backgroundColor: '#1DB954',
+          color: 'white',
+          border: 'none',
+          borderRadius: '20px',
+          cursor: 'pointer',
+          fontSize: '16px',
+          marginTop: '10px'
+        }}
+      >
+        Log in with Spotify
+      </button>
     </div>
   );
 };
